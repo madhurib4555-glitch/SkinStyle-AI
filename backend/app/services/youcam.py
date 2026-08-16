@@ -59,9 +59,12 @@ class YouCamClient(Protocol):
         ...
 
     async def start_try_on(
-        self, person_bytes: bytes, garment_bytes: bytes
+        self,
+        person_bytes: bytes,
+        garment_bytes: bytes,
+        garment_category: str = _DEFAULT_GARMENT_CATEGORY,
     ) -> str:
-        """Submit a clothing VTO task and return its task id."""
+        """Upload person + garment and create a YouCam cloth-v3 task."""
         ...
 
     async def poll_try_on(
@@ -438,8 +441,23 @@ class LiveYouCamClient:
         self,
         person_bytes: bytes,
         garment_bytes: bytes,
+        garment_category: str = _DEFAULT_GARMENT_CATEGORY,
     ) -> str:
         """Upload person + garment and create a YouCam cloth-v3 task."""
+
+        # Only allow categories supported by our application.
+        allowed_categories = {
+            "upper_body",
+            "lower_body",
+            "full_body",
+            "shoes",
+            "auto",
+        }
+
+        if garment_category not in allowed_categories:
+            raise YouCamError(
+                f"Unsupported garment category: {garment_category}"
+            )
 
         async with httpx.AsyncClient(timeout=60) as client:
             # ---------------------------------------------------------
@@ -469,7 +487,7 @@ class LiveYouCamClient:
                 json={
                     "src_file_id": person_id,
                     "ref_file_id": garment_id,
-                    "garment_category": _DEFAULT_GARMENT_CATEGORY,
+                    "garment_category": garment_category,
                 },
             )
 
