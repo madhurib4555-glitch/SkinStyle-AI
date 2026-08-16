@@ -1,0 +1,34 @@
+[project]
+name = "skinstyle-backend"
+version = "0.1.0"
+description = "SkinStyle AI backend - skin tone analysis and apparel virtual try-on"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.12",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "httpx>=0.27",
+    "pillow>=11.0",
+    "numpy>=2.1",
+    # Pinned to 4.x: OpenCV 5.0 dropped objdetect (CascadeClassifier) from the
+    # headless wheel, which face detection depends on.
+    "opencv-python-headless>=4.10,<5",
+    "cryptography>=43.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[[tool.uv.index]]
+url = "https://pypi.apple.com/simple"
+default = true
